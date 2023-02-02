@@ -2,42 +2,15 @@ import express from "express";
 import createHttpError from "http-errors";
 import { Op } from "sequelize";
 import ProductsModel from "./model.js";
-import ProductsCategoriesModel from "../JUNCTION/productsCategoriesModel.js";
 
 const { NotFound } = createHttpError;
 
 export const productsRouter = express.Router();
 
-// POST - without the ProductsCategoriesModel
-// productsRouter.post("/", async (req, res, next) => {
-//   try {
-//     const product = await ProductsModel.create(req.body);
-//     res.status(201).send(product);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// POST - with the ProductsCategoriesModel
 productsRouter.post("/", async (req, res, next) => {
   try {
-    // const product = await ProductsModel.create(req.body);
-    // console.log("product", product);
-    // console.log("req.body", req.body);
-    // const id = product.id;
-    // console.log("product id:", id);
-
-    const { id } = await ProductsModel.create(req.body);
-
-    if (req.body.categories) {
-      await ProductsCategoriesModel.bulkCreate(
-        req.body.categories.map((category) => {
-          return { categoryId: category, productId: id };
-        })
-      );
-    }
-    console.log("req.categories", req.body.categories);
-    res.status(201).send({ productId: id });
+    const product = await ProductsModel.create(req.body);
+    res.status(201).send(product);
   } catch (error) {
     next(error);
   }
@@ -46,14 +19,8 @@ productsRouter.post("/", async (req, res, next) => {
 productsRouter.get("/", async (req, res, next) => {
   try {
     const query = {};
-    if (req.query.name) {
+    if (req.query.name || req.query.category) {
       query.name = { [Op.iLike]: `%${req.query.name}%` };
-      const filteredProducts = await ProductsModel.findAll({
-        where: { ...query },
-        attributes: ["name", "category", "price"],
-      });
-      res.send(filteredProducts);
-    } else if (req.query.category) {
       query.category = { [Op.startsWith]: `${req.query.category}` };
       const filteredProducts = await ProductsModel.findAll({
         where: { ...query },
