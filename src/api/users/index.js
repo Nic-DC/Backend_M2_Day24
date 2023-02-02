@@ -1,60 +1,60 @@
 import express from "express";
 import createHttpError from "http-errors";
 import { Op } from "sequelize";
-import ProductsModel from "./model.js";
+import UsersModel from "./model.js";
 
 const { NotFound } = createHttpError;
 
-export const productsRouter = express.Router();
+export const usersRouter = express.Router();
 
-productsRouter.post("/", async (req, res, next) => {
+usersRouter.post("/", async (req, res, next) => {
   try {
-    const product = await ProductsModel.create(req.body);
-    res.status(201).send(product);
+    const user = await UsersModel.create(req.body);
+    res.status(201).send(user);
   } catch (error) {
     next(error);
   }
 });
 
-productsRouter.get("/", async (req, res, next) => {
+usersRouter.get("/", async (req, res, next) => {
   try {
     const query = {};
     if (req.query.name || req.query.category) {
       query.name = { [Op.iLike]: `%${req.query.name}%` };
       query.category = { [Op.startsWith]: `${req.query.category}` };
-      const filteredProducts = await ProductsModel.findAll({
+      const filteredUsers = await UsersModel.findAll({
         where: { ...query },
         attributes: ["name", "category", "price"],
       });
-      res.send(filteredProducts);
+      res.send(filteredUsers);
     } else {
-      const products = await ProductsModel.findAll();
-      res.send(products);
+      const users = await UsersModel.findAll();
+      res.send(users);
     }
   } catch (error) {
     next(error);
   }
 });
 
-productsRouter.get("/:productId", async (req, res, next) => {
+usersRouter.get("/:userId", async (req, res, next) => {
   try {
-    const searchedProduct = await ProductsModel.findByPk(req.params.productId, {
+    const searchedUser = await UsersModel.findByPk(req.params.userId, {
       attributes: { exclude: ["createdAt", "updatedAt"] }, // (SELECT) pass an object with exclude property for the omit list
     });
-    if (searchedProduct) {
-      res.send(searchedProduct);
+    if (searchedUser) {
+      res.send(searchedUser);
     } else {
-      next(NotFound(`The product with id: ${req.params.productId} not in the db`));
+      next(NotFound(`The user with id: ${req.params.userId} not in the db`));
     }
   } catch (error) {
     next(error);
   }
 });
 
-productsRouter.put("/:productId", async (req, res, next) => {
+usersRouter.put("/:userId", async (req, res, next) => {
   try {
-    const [numerOfUpdatedRows, updatedRecords] = await ProductsModel.update(req.body, {
-      where: { id: req.params.productId },
+    const [numerOfUpdatedRows, updatedRecords] = await UsersModel.update(req.body, {
+      where: { id: req.params.userId },
       attributes: { exclude: ["createdAt", "updatedAt"] },
       returning: true,
     });
@@ -62,23 +62,23 @@ productsRouter.put("/:productId", async (req, res, next) => {
     if (numerOfUpdatedRows === 1) {
       res.send(updatedRecords[0]);
     } else {
-      next(NotFound(`The product with id: ${req.params.productId} not in the db`));
+      next(NotFound(`The user with id: ${req.params.userId} not in the db`));
     }
   } catch (error) {
     next(error);
   }
 });
 
-productsRouter.delete("/:productId", async (req, res, next) => {
+usersRouter.delete("/:userId", async (req, res, next) => {
   try {
-    const numberOfDeletedRows = await ProductsModel.destroy({
-      where: { id: req.params.productId },
+    const numberOfDeletedRows = await UsersModel.destroy({
+      where: { id: req.params.userId },
     });
     console.log("numberOfDeletedRows", numberOfDeletedRows);
     if (numberOfDeletedRows === 1) {
-      res.send(`The product with id: ${req.params.productId} successfully deleted`);
+      res.send(`The user with id: ${req.params.userId} successfully deleted`);
     } else {
-      next(NotFound(`The product with id: ${req.params.productId} not in the db`));
+      next(NotFound(`The user with id: ${req.params.userId} not in the db`));
     }
   } catch (error) {
     next(error);

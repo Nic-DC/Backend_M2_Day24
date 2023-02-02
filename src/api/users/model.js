@@ -1,28 +1,28 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../db.js";
 
-const ProductsModel = sequelize.define("product", {
-  name: {
+const UsersModel = sequelize.define("user", {
+  firstName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  category: {
+  lastName: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
-    type: DataTypes.TEXT,
+  email: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   image: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  price: {
-    type: DataTypes.FLOAT,
+  country: {
+    type: DataTypes.STRING(3),
     allowNull: false,
   },
   /* {timestamps: true} TIMESTAMPS HERE ARE TRUE BY DEFAULT */
 });
 
-export default ProductsModel;
+export default UsersModel;
