@@ -27,17 +27,17 @@ productsRouter.post("/", async (req, res, next) => {
     // const id = product.id;
     // console.log("product id:", id);
 
-    const { id } = await ProductsModel.create(req.body);
+    const { productId } = await ProductsModel.create(req.body);
 
     if (req.body.categories) {
       await ProductsCategoriesModel.bulkCreate(
         req.body.categories.map((category) => {
-          return { categoryId: category, productId: id };
+          return { categoryId: category, productId: productId };
         })
       );
     }
     console.log("req.categories", req.body.categories);
-    res.status(201).send({ productId: id });
+    res.status(201).send({ productId: productId });
   } catch (error) {
     next(error);
   }

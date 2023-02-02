@@ -3,6 +3,11 @@ import sequelize from "../../db.js";
 import ReviewsModel from "../reviews/model.js";
 
 const UsersModel = sequelize.define("user", {
+  userId: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
