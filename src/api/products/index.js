@@ -28,7 +28,7 @@ productsRouter.post("/", async (req, res, next) => {
     // console.log("product id:", id);
 
     const { productId } = await ProductsModel.create(req.body);
-
+    console.log("productId", productId);
     if (req.body.categories) {
       await ProductsCategoriesModel.bulkCreate(
         req.body.categories.map((category) => {
